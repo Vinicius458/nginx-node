@@ -19,9 +19,12 @@ services:
     build:
       context: ./node
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - default-network
+    volumes:
+      - ./node:/usr/src/app
 
   db:
     build:
@@ -36,6 +39,23 @@ services:
     environment:
       - MYSQL_DATABASE=nodedb
       - MYSQL_ROOT_PASSWORD=root
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p$$MYSQL_ROOT_PASSWORD",
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    ports:
+      - 3306:3306
 
 networks:
   default-network:
