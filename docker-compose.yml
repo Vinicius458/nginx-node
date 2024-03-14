@@ -25,6 +25,7 @@ services:
       - default-network
     volumes:
       - ./node:/usr/src/app
+      - /usr/src/app/node_modules
 
   db:
     build:
